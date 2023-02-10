@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import Global from "./global/Global";
+import { publicRoute } from "./route/routes";
+import { useDispatch } from "react-redux";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DeafaultLayout from "./components/template/DeafaultLayout";
+import { Fragment, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { userNavigate } from "./redux/navigateSlice";
+
 
 function App() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+
+  useEffect(() => {
+    dispatch(userNavigate(navigate));
+    console.log(navigate);
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <Global>      
+      <Routes>        
+          {publicRoute.map((route, index)=>{
+            let Page = route.component
+            let Layout = DeafaultLayout;
+            if(route.layout){
+              Layout = route.layout
+            }else if(route.layout === null){
+              Layout = Fragment
+            }
+           return (
+            <Route key={index} path={route.path} element={<Layout><Page/></Layout>}/>
+           )
+          })}       
+        </Routes>          
+   </Global>
   );
 }
 
